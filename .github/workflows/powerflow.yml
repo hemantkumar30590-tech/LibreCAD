@@ -1,0 +1,18 @@
+name: Generation to Home Workflow
+
+on: [push]
+
+jobs:
+  make-sld:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - run: pip install matplotlib
+      - run: python sld_with_symbols.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SLD-With-Symbols
+          path: sld_with_symbols.png
