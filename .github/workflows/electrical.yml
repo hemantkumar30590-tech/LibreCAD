@@ -1,0 +1,41 @@
+name: Build Electrical Symbols
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y librecad
+          pip install ezdxf matplotlib
+
+      - name: List Electrical Symbols (Tera kaam)
+        run: |
+          ls library/Electrical/
+          echo "--- Total Symbols ---"
+          find library/Electrical -name "*.dxf" | wc -l
+
+      - name: Convert DXF to PNG for ElectroGPT
+        run: |
+          python -c "
+          import ezdxf, os
+          from pathlib import Path
+          for dxf_file in Path('library/Electrical').rglob('*.dxf'):
+              print(f'Found: {dxf_file}')
+          "
+
+      - name: Upload Symbols
+        uses: actions/upload-artifact@v4
+        with:
+          name: electrical-symbols
+          path: library/Electrical/
